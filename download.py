@@ -6,9 +6,10 @@ import tkinter.messagebox
 from headers import Heders
 from bs4 import BeautifulSoup
 from dbcollecter import Dbcollecter
+import threading
 from pymysql import err
 class Download(Heders, Dbcollecter):
-    def download_song(self, song_list, lists):
+    def download_song(self, song_list, lists,a_user):
         ips = self.get_proxy_ip()
         for n in lists:  # 遍历所选歌曲
             song = song_list[n]   # 在列表中找到所选歌曲
@@ -34,13 +35,12 @@ class Download(Heders, Dbcollecter):
 
             try:
                 response = requests.get(song_url, stream=True, headers=headers)
-
+               # t2 = threading.Thread(target=run_thread, args=(8,))
             except Exception :
                     tkinter.messagebox.showinfo('提示', '歌曲下载失败')
 
-
             try:
-                Dbcollecter.save_song(self, title, name, id)   # 保存下载的歌曲到数据库
+                Dbcollecter.save_song(self, title, name, id, a_user)   # 保存下载的歌曲到数据库
                 with open(song_name + '.mp3', 'wb') as file:   # 保存歌曲到本地
                     file.write(response.content)
                 tkinter.messagebox.showinfo('提示', '下载成功')
@@ -55,7 +55,6 @@ class Download(Heders, Dbcollecter):
         self.headers = {'user-agent': Heders.get_user_agent(self)}
         resp = requests.get(url, headers=self.headers)
         soup = BeautifulSoup(resp.text, 'lxml')
-        ip = soup.select('tbody > tr > td')
         url = 'http://www.89ip.cn/'
         resp = requests.get(url)
         soup = BeautifulSoup(resp.text, 'lxml')

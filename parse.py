@@ -2,6 +2,8 @@ import tkinter.messagebox
 import requests
 import json
 from urllib import parse
+
+
 class Pars():
     def find_songs(self, word):
         # 浏览器头部
@@ -16,5 +18,4 @@ class Pars():
             resp = requests.get(url.format(url_data), headers=headers)  # 发送请求
         except Exception:
             tkinter.messagebox.showinfo('提示', '歌曲解析失败')
-
         self.all_songs = json.loads(resp.text)['data']['song']['list']   # json解析
